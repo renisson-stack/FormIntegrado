@@ -139,7 +139,7 @@ th{background:#f0f0f0;}
 
 <!-- CHAMADOS -->
 <div id="chamadosPage">
-<h3>Chamados Salvos</h3>
+<h3>Chamados Salvos (Espelhado do Google Sheets)</h3>
 
 <table>
 <thead>
@@ -163,7 +163,6 @@ th{background:#f0f0f0;}
 
 </div>
 
-<!-- ===================== SCRIPT ===================== -->
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwbU4lhBDsPbz-PFEgmHwhXLncUzeyxQjQKkjlXLv3LflWxWnODTDvUGCl_BYAkbNJJQQ/exec';
 
@@ -175,10 +174,10 @@ function abrirForm(){
 function abrirChamados(){
   formPage.style.display="none";
   chamadosPage.style.display="block";
-  carregarChamados();
+  carregarChamados(); // 🔁 ESPELHA A PLANILHA
 }
 
-/* SALVAR CHAMADO (SEM JSON – COMPATÍVEL COM GAS) */
+/* SALVAR CHAMADO */
 function salvarChamado() {
   const params = new URLSearchParams();
   params.append('titulo', titulo.value);
@@ -202,6 +201,7 @@ function salvarChamado() {
       alert('Chamado salvo com sucesso!');
       document.querySelectorAll('#formPage input, #formPage textarea')
         .forEach(i => i.value = '');
+      abrirChamados(); // ✅ ESPELHA AUTOMATICAMENTE
     } else {
       alert('Erro: ' + data.message);
     }
@@ -209,7 +209,7 @@ function salvarChamado() {
   .catch(err => alert('Erro ao enviar: ' + err));
 }
 
-/* CARREGAR CHAMADOS */
+/* CARREGAR CHAMADOS (GOOGLE SHEETS) */
 function carregarChamados(){
   fetch(WEB_APP_URL)
     .then(res=>res.json())
