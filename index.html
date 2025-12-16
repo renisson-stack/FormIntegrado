@@ -4,112 +4,124 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema de Chamados</title>
+
 <style>
 body{
-    font-family:Arial,sans-serif;
+    font-family: Arial, sans-serif;
     margin:0;
     padding:10px;
     background:#f2f2f2;
 }
 #mainframe{
-    max-width:800px;
+    max-width:900px;
     margin:auto;
     background:#fff;
-    padding:10px;
+    padding:12px;
     border-radius:6px;
-    overflow-x:auto;
 }
-h2{margin:10px 0;text-align:center;}
+h2,h3{
+    text-align:center;
+    margin:10px 0;
+}
 button{
-    padding:6px 10px;
-    margin:3px;
+    padding:6px 12px;
+    margin:4px;
     cursor:pointer;
     font-size:13px;
     border-radius:4px;
+    border:none;
 }
+.btn-nav{background:#6c757d;color:#fff;}
+.btn-save{background:#007bff;color:#fff;}
+.btn-txt{background:#28a745;color:#fff;}
+
 #formPage,#chamadosPage{display:none;}
+
+label{
+    font-weight:600;
+    font-size:13px;
+    margin-top:6px;
+    display:block;
+}
 input,textarea{
     width:100%;
     padding:6px;
-    margin-bottom:5px;
+    margin-bottom:6px;
     border:1px solid #ccc;
     border-radius:4px;
     box-sizing:border-box;
+    font-size:13px;
 }
-textarea{height:60px;resize:vertical;}
-label{font-weight:600;margin-top:4px;margin-bottom:2px;display:block;}
+textarea{height:70px;resize:vertical;}
+
 table{
     width:100%;
     border-collapse:collapse;
     margin-top:10px;
-    table-layout:auto;
+    font-size:12px;
 }
-table,th,td{border:1px solid #000;}
-th,td{padding:6px;text-align:left; word-wrap:break-word;}
-.section-title{
-    background:#2f4f6f;
-    color:#fff;
-    padding:6px 10px;
-    margin:15px 0 5px 0;
-    font-weight:bold;
-    border-radius:4px;
+th,td{
+    border:1px solid #ccc;
+    padding:6px;
+    text-align:left;
+    word-break:break-word;
 }
-.btn-save{background:#007bff;color:#fff;border:none;padding:5px 12px;margin-top:5px;cursor:pointer;}
-.btn-save:hover{background:#0056b3;}
-.btn-txt{background:#28a745;color:#fff;border:none;padding:5px 12px;margin-top:5px;cursor:pointer;}
-.btn-txt:hover{background:#1e7e34;}
+th{background:#f0f0f0;}
 
 /* MOBILE */
 @media (max-width:768px){
-    table, thead, tbody, th, td, tr{
-        display:block;
+    table,thead,tbody,th,td,tr{display:block;}
+    thead{display:none;}
+    tr{
+        margin-bottom:10px;
+        border:1px solid #ccc;
+        border-radius:4px;
+        padding:6px;
+        background:#fafafa;
     }
-    thead tr{
-        position:absolute;
-        top:-9999px;
-        left:-9999px;
-    }
-    tr{margin-bottom:10px; border:1px solid #ccc; padding:5px;}
     td{
         border:none;
+        padding-left:45%;
         position:relative;
-        padding-left:50%;
-        text-align:left;
     }
     td:before{
         position:absolute;
-        top:6px;
         left:6px;
-        width:45%;
-        padding-right:10px;
-        white-space:nowrap;
+        top:6px;
+        width:40%;
         font-weight:bold;
+        white-space:nowrap;
     }
-    td:nth-of-type(1):before {content:"Data/Hora";}
-    td:nth-of-type(2):before {content:"Título";}
-    td:nth-of-type(3):before {content:"Solicitante";}
-    td:nth-of-type(4):before {content:"Centro de Custo";}
-    td:nth-of-type(5):before {content:"Unidade";}
-    td:nth-of-type(6):before {content:"Departamento";}
-    td:nth-of-type(7):before {content:"Contato";}
-    td:nth-of-type(8):before {content:"Email";}
-    td:nth-of-type(9):before {content:"Previsão";}
-    td:nth-of-type(10):before {content:"Descrição";}
-    td:nth-of-type(11):before {content:"Equipamento";}
+    td:nth-child(1):before{content:"Data";}
+    td:nth-child(2):before{content:"Título";}
+    td:nth-child(3):before{content:"Solicitante";}
+    td:nth-child(4):before{content:"Centro Custo";}
+    td:nth-child(5):before{content:"Unidade";}
+    td:nth-child(6):before{content:"Departamento";}
+    td:nth-child(7):before{content:"Contato";}
+    td:nth-child(8):before{content:"Email";}
+    td:nth-child(9):before{content:"Previsão";}
+    td:nth-child(10):before{content:"Descrição";}
+    td:nth-child(11):before{content:"Equipamento";}
 }
 </style>
 </head>
+
 <body>
 <div id="mainframe">
+
 <h2>Sistema de Chamados</h2>
 
-<!-- BOTÕES DE NAVEGAÇÃO -->
-<button onclick="abrirForm()">FORMULÁRIO</button>
-<button onclick="abrirChamados()">CHAMADOS</button>
+<!-- BOTÕES -->
+<div style="text-align:center">
+  <button class="btn-nav" onclick="abrirForm()">FORMULÁRIO</button>
+  <button class="btn-nav" onclick="abrirChamados()">CHAMADOS</button>
+</div>
 
 <!-- FORMULÁRIO -->
 <div id="formPage">
-<div class="section-title">Formulário de Chamados</div>
+<h3>Formulário de Chamado</h3>
+
 <label>Título</label><input id="titulo">
 <label>Solicitante</label><input id="solicitante">
 <label>Centro de Custo</label><input id="cc">
@@ -128,10 +140,11 @@ th,td{padding:6px;text-align:left; word-wrap:break-word;}
 <!-- CHAMADOS -->
 <div id="chamadosPage">
 <h3>Chamados Salvos</h3>
+
 <table>
 <thead>
 <tr>
-<th>Data/Hora</th>
+<th>Data</th>
 <th>Título</th>
 <th>Solicitante</th>
 <th>Centro de Custo</th>
@@ -148,9 +161,24 @@ th,td{padding:6px;text-align:left; word-wrap:break-word;}
 </table>
 </div>
 
+</div>
+
+<!-- ===================== SCRIPT ===================== -->
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwbU4lhBDsPbz-PFEgmHwhXLncUzeyxQjQKkjlXLv3LflWxWnODTDvUGCl_BYAkbNJJQQ/exec';
 
+/* ABAS */
+function abrirForm(){
+  formPage.style.display="block";
+  chamadosPage.style.display="none";
+}
+function abrirChamados(){
+  formPage.style.display="none";
+  chamadosPage.style.display="block";
+  carregarChamados();
+}
+
+/* SALVAR CHAMADO (SEM JSON – COMPATÍVEL COM GAS) */
 function salvarChamado() {
   const params = new URLSearchParams();
   params.append('titulo', titulo.value);
@@ -180,12 +208,45 @@ function salvarChamado() {
   })
   .catch(err => alert('Erro ao enviar: ' + err));
 }
+
+/* CARREGAR CHAMADOS */
+function carregarChamados(){
+  fetch(WEB_APP_URL)
+    .then(res=>res.json())
+    .then(data=>{
+      const tbody=document.getElementById('listaChamados');
+      tbody.innerHTML='';
+      data.forEach((row,index)=>{
+        if(index===0) return;
+        const tr=document.createElement('tr');
+        row.forEach(cell=>{
+          const td=document.createElement('td');
+          td.textContent=cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    });
+}
+
+/* GERAR TXT */
+function gerarTXT(){
+  let texto='';
+  const labels=document.querySelectorAll('#formPage label');
+  const fields=document.querySelectorAll('#formPage input, #formPage textarea');
+  labels.forEach((l,i)=>{
+    texto += `${l.textContent}: ${fields[i].value}\n`;
+  });
+  const blob=new Blob([texto],{type:"text/plain"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="chamado.txt";
+  link.click();
+}
+
+/* ABRIR FORM POR PADRÃO */
+abrirForm();
 </script>
 
-</div>
 </body>
 </html>
-
-
-
-
