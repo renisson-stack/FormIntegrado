@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Sistema de Chamados & Consulta Patrimônio</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; padding: 5px; max-width: 600px; margin: 0 auto; }
+button { padding: 6px 10px; margin: 3px; cursor: pointer; font-size: 13px; border-radius:4px; }
+#consultaPage, #formPage, #chamadosPage { display:none; }
+
+#salvarBtn { background:#007bff; color:white; }
+#Gerar { background:#28a745; color:white; }
+#Chamados { background:#fd7e14; color:white; }
+
+.card { background:#fff; border-radius:6px; padding:8px; margin-bottom:8px; box-shadow:0 3px 8px rgba(0,0,0,0.05); }
+
+input, textarea {
+ width:100%; padding:6px; border:1px solid #ccc; border-radius:5px;
+ box-sizing:border-box; margin-bottom:5px; font-size:13px;
+}
+
+textarea { height:60px; resize: vertical; }
+label { font-weight:600; margin-top:4px; margin-bottom:2px; display:block; font-size:13px; }
+.small { font-size:11px; color:#555; }
+table{width:100%; border-collapse:collapse; margin-top:10px;}
+table, th, td{border:1px solid #000;}
+th, td{padding:6px;text-align:left;}
+</style>
+</head>
+
+<body>
+
+<header><img src="logo-braskem.png" style="height:70px;"></header>
+
+<h2>Sistema de Chamados & Consulta Patrimônio</h2>
+
+<!-- BOTÕES DE NAVEGAÇÃO -->
+<button onclick="abrirForm()">FORMULÁRIO</button>
+<button onclick="abrirConsulta()">CONSULTAR PATRIMÔNIO</button>
+<button onclick="abrirChamados()">CHAMADOS</button>
+
+<br>
+
+<!-- ===========================================================
+==================== 1) FORMULÁRIO ==============================
+=========================================================== -->
+<div id="formPage">
+
+<label>Título</label><input id="titulo">
+<label>Solicitante</label><input id="solicitante">
+<label>Centro de Custo</label><input id="cc">
+<label>Unidade</label><input id="unidade">
+<label>Departamento</label><input id="departamento">
+<label>Contato</label><input id="contato">
+<label>Email</label><input id="email">
+<label>Previsão</label><input id="previsao">
+<label>Descrição</label><textarea id="descricao"></textarea>
+<label>Equipamento</label><input id="equipamento">
+
+<button id="salvarBtn" onclick="salvarChamado()">Salvar Chamado</button>
+<button id="Gerar" onclick="gerarTXT()">Gerar TXT</button>
+
+</div>
+
+<!-- ===========================================================
+==================== 2) PÁGINA DE CHAMADOS SALVOS ===============
+=========================================================== -->
+<div id="chamadosPage">
+
+<h3>Chamados Salvos</h3>
+
+<table>
+<thead>
+<tr>
+<th>Data/Hora</th>
+<th>Título</th>
+<th>Solicitante</th>
+<th>Centro de Custo</th>
+<th>Unidade</th>
+<th>Departamento</th>
+<th>Contato</th>
+<th>Email</th>
+<th>Previsão</th>
+<th>Descrição</th>
+<th>Equipamento</th>
+</tr>
+</thead>
+<tbody id="listaChamados"></tbody>
+</table>
+
+</div>
+
+<!-- ===========================================================
+==================== 3) CONSULTA DE PATRIMÔNIO =================
+=========================================================== -->
+<div id="consultaPage">
+
+<div class="card">
+<h3>Importar planilha</h3>
+<input id="file" type="file" accept=".xlsx,.xls,.csv" />
+<div id="status" class="small">Nenhum arquivo carregado.</div>
+</div>
+
+<div class="card">
+<label for="patrimonio">Buscar Patrimônio</label>
+<input id="patrimonio" type="text" placeholder="Digite o patrimônio">
+<button id="buscarBtn" disabled>Buscar</button>
+
+<div style="display:flex;gap:8px;margin-top:6px">
+ <div style="flex:1"><label>Departamento</label><input id="depOut" readonly></div>
+ <div style="flex:1"><label>Serial</label><input id="serialOut" readonly></div>
+ <div style="flex:1"><label>Modelo</label><input id="modeloOut" readonly></div>
+</div>
+
+<div id="msg" class="small"></div>
+</div>
+
+<div class="card">
+<strong>Pré-visualização</strong>
+<div class="preview" id="previewArea">Nenhum dado.</div>
+</div>
+
+</div>
+
+<script>
+const WEB_APP_URL = 'COLE_AQUI_SUA_URL_DO_WEB_APP';
+
+// ---------- ABAS ----------
+function abrirForm(){
+ formPage.style.display = "block";
+ consultaPage.style.display = "none";
+ chamadosPage.style.display = "none";
+}
+
+function abrirConsulta(){
+ formPage.style.display = "none";
+ consultaPage.style.display = "block";
+ chamadosPage.style.display = "none";
+}
+
+function abrirChamados(){
+ formPage.style.display = "none";
+ consultaPage.style.display = "none";
+ chamadosPage.style.display = "block";
+ carregarChamados();
+}
+
+// ---------- SALVAR CHAMADO ----------
+function salvarChamado(){
+ const c = {
+  titulo: titulo.value,
+  solicitante: solicitante.value,
+  cc: cc.value,
+  unidade: unidade.value,
+  departamento: departamento.value,
+  contato: contato.value,
+  email: email.value,
+  previsao: previsao.value,
+  descricao: descricao.value,
+  equipamento: equipamento.value
+ };
+
+ // Envia para Google Sheet
+ fetch(WEB_APP_URL, {
+   method: 'POST',
+   body: JSON.stringify(c),
+   headers: {'Content-Type':'application/json'}
+ })
+ .then(res=>res.json())
+ .then(data=>{
+   if(data.status==='ok'){
+     alert('Chamado salvo com sucesso!');
+     // Limpar campos
+     titulo.value=''; solicitante.value=''; cc.value=''; unidade.value='';
+     departamento.value=''; contato.value=''; email.value=''; previsao.value='';
+     descricao.value=''; equipamento.value='';
+   } else {
+     alert('Erro: '+data.message);
+   }
+ })
+ .catch(err=>alert('Erro ao enviar: '+err));
+}
+
+// ---------- CARREGAR CHAMADOS ----------
+function carregarChamados(){
+ fetch(https://script.google.com/macros/s/AKfycbzPc5BDQbhSJkBIrxk9Y53LsZRU3J5ifLC_7BzP_9z5hYsvZBkuxU_Lt3SzTYngkQnfiA/exec)
+ .then(res=>res.json())
+ .then(data=>{
+   const tbody = document.getElementById('listaChamados');
+   tbody.innerHTML='';
+   data.forEach((row,index)=>{
+     if(index===0) return; // caso primeira linha seja cabeçalho
+     const tr = document.createElement('tr');
+     row.forEach(cell=>{
+       const td = document.createElement('td');
+       td.textContent = cell;
+       tr.appendChild(td);
+     });
+     tbody.appendChild(tr);
+   });
+ })
+}
+
+// ---------- GERAR TXT ----------
+function gerarTXT(){
+ let texto = 
+ `TITULO: ${titulo.value}
+SOLICITANTE: ${solicitante.value}
+CENTRO DE CUSTO: ${cc.value}
+UNIDADE: ${unidade.value}
+DEPARTAMENTO: ${departamento.value}
+CONTATO: ${contato.value}
+EMAIL: ${email.value}
+PREVISAO: ${previsao.value}
+DESCRICAO: ${descricao.value}
+EQUIPAMENTO: ${equipamento.value}`;
+
+ const blob = new Blob([texto], { type: "text/plain" });
+ const link = document.createElement("a");
+ link.href = URL.createObjectURL(blob);
+ link.download = "chamado.txt";
+ link.click();
+}
+</script>
+
+</body>
+</html>
