@@ -1,31 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<title>Sistema de Chamados & Consulta Patrimônio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Chamados</title>
 <style>
-body{font-family:Arial,sans-serif; padding:5px; max-width:600px; margin:0 auto;}
-button{padding:6px 10px; margin:3px; cursor:pointer; font-size:13px; border-radius:4px;}
-#formPage,#chamadosPage,#consultaPage{display:none;}
-#salvarBtn{background:#007bff;color:white;}
-#Gerar{background:#28a745;color:white;}
-table{width:100%; border-collapse:collapse; margin-top:10px;}
-table, th, td{border:1px solid #000;}
-th, td{padding:6px;text-align:left;}
-input, textarea{width:100%;padding:6px;border:1px solid #ccc;border-radius:5px;margin-bottom:5px;font-size:13px;}
-textarea{height:60px; resize: vertical;}
-label{font-weight:600;margin-top:4px;margin-bottom:2px;display:block;font-size:13px;}
+body{
+    font-family:Arial,sans-serif;
+    margin:0;
+    padding:10px;
+    background:#f2f2f2;
+}
+#mainframe{
+    max-width:800px;
+    margin:auto;
+    background:#fff;
+    padding:10px;
+    border-radius:6px;
+    overflow-x:auto; /* permite rolagem horizontal se necessário */
+}
+h2{margin:10px 0;text-align:center;}
+button{
+    padding:6px 10px;
+    margin:3px;
+    cursor:pointer;
+    font-size:13px;
+    border-radius:4px;
+}
+#formPage,#chamadosPage{display:none;}
+input,textarea{
+    width:100%;
+    padding:6px;
+    margin-bottom:5px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    box-sizing:border-box;
+}
+textarea{height:60px;resize:vertical;}
+label{font-weight:600;margin-top:4px;margin-bottom:2px;display:block;}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    table-layout:auto; /* tabela responsiva */
+}
+table,th,td{border:1px solid #000;}
+th,td{padding:6px;text-align:left; word-wrap:break-word;}
+.section-title{
+    background:#2f4f6f;
+    color:#fff;
+    padding:6px 10px;
+    margin:15px 0 5px 0;
+    font-weight:bold;
+    border-radius:4px;
+}
+.btn-save{background:#007bff;color:#fff;border:none;padding:5px 12px;margin-top:5px;cursor:pointer;}
+.btn-save:hover{background:#0056b3;}
+.btn-txt{background:#28a745;color:#fff;border:none;padding:5px 12px;margin-top:5px;cursor:pointer;}
+.btn-txt:hover{background:#1e7e34;}
+
+/* MOBILE */
+@media (max-width:768px){
+    table, thead, tbody, th, td, tr{
+        display:block;
+    }
+    thead tr{
+        position:absolute;
+        top:-9999px;
+        left:-9999px;
+    }
+    tr{margin-bottom:10px; border:1px solid #ccc; padding:5px;}
+    td{
+        border:none;
+        position:relative;
+        padding-left:50%;
+        text-align:left;
+    }
+    td:before{
+        position:absolute;
+        top:6px;
+        left:6px;
+        width:45%;
+        padding-right:10px;
+        white-space:nowrap;
+        font-weight:bold;
+    }
+    td:nth-of-type(1):before {content:"Data/Hora";}
+    td:nth-of-type(2):before {content:"Título";}
+    td:nth-of-type(3):before {content:"Solicitante";}
+    td:nth-of-type(4):before {content:"Centro de Custo";}
+    td:nth-of-type(5):before {content:"Unidade";}
+    td:nth-of-type(6):before {content:"Departamento";}
+    td:nth-of-type(7):before {content:"Contato";}
+    td:nth-of-type(8):before {content:"Email";}
+    td:nth-of-type(9):before {content:"Previsão";}
+    td:nth-of-type(10):before {content:"Descrição";}
+    td:nth-of-type(11):before {content:"Equipamento";}
+}
 </style>
 </head>
 <body>
+<div id="mainframe">
+<h2>Sistema de Chamados</h2>
 
-<h2>Sistema de Chamados & Consulta Patrimônio</h2>
-
+<!-- BOTÕES DE NAVEGAÇÃO -->
 <button onclick="abrirForm()">FORMULÁRIO</button>
 <button onclick="abrirChamados()">CHAMADOS</button>
 
 <!-- FORMULÁRIO -->
 <div id="formPage">
+<div class="section-title">Formulário de Chamados</div>
 <label>Título</label><input id="titulo">
 <label>Solicitante</label><input id="solicitante">
 <label>Centro de Custo</label><input id="cc">
@@ -37,8 +121,8 @@ label{font-weight:600;margin-top:4px;margin-bottom:2px;display:block;font-size:1
 <label>Descrição</label><textarea id="descricao"></textarea>
 <label>Equipamento</label><input id="equipamento">
 
-<button id="salvarBtn" onclick="salvarChamado()">Salvar Chamado</button>
-<button id="Gerar" onclick="gerarTXT()">Gerar TXT</button>
+<button class="btn-save" onclick="salvarChamado()">Salvar Chamado</button>
+<button class="btn-txt" onclick="gerarTXT()">Gerar TXT</button>
 </div>
 
 <!-- CHAMADOS -->
@@ -85,21 +169,23 @@ function salvarChamado(){
   descricao: descricao.value,
   equipamento: equipamento.value
  };
- fetch(https://script.google.com/macros/s/AKfycbzPc5BDQbhSJkBIrxk9Y53LsZRU3J5ifLC_7BzP_9z5hYsvZBkuxU_Lt3SzTYngkQnfiA/exec,{
-   method:'POST',
+
+fetch('https://script.google.com/macros/s/AKfycbw4i_ZsN1qWG6P6_2v0tmeYC3QnO0A6SVQly7Yox1t7PCs4kbgMVz6Bpchabl3bj4TBSw/exec', {
+   method: 'POST',
    body: JSON.stringify(c),
-   headers:{'Content-Type':'application/json'}
- })
- .then(res=>res.json())
- .then(data=>{
-   if(data.status==='ok'){
-     alert('Chamado salvo com sucesso!');
-     titulo.value=''; solicitante.value=''; cc.value=''; unidade.value='';
-     departamento.value=''; contato.value=''; email.value=''; previsao.value='';
-     descricao.value=''; equipamento.value='';
-   } else alert('Erro: '+data.message);
- })
- .catch(err=>alert('Erro ao enviar: '+err));
+   headers: {'Content-Type': 'application/json'}
+})
+.then(res => res.json())
+.then(data => {
+   if (data.status === 'ok') {
+       alert('Chamado salvo com sucesso!');
+       document.querySelectorAll('#formPage input, #formPage textarea').forEach(i => i.value = '');
+   } else {
+       alert('Erro: ' + data.message);
+   }
+})
+.catch(err => alert('Erro ao enviar: ' + err));
+
 }
 
 // CARREGAR CHAMADOS
@@ -110,7 +196,7 @@ function carregarChamados(){
    const tbody=document.getElementById('listaChamados');
    tbody.innerHTML='';
    data.forEach((row,index)=>{
-     if(index===0) return; // caso seja header
+     if(index===0) return;
      const tr=document.createElement('tr');
      row.forEach(cell=>{
        const td=document.createElement('td');
@@ -124,17 +210,10 @@ function carregarChamados(){
 
 // GERAR TXT
 function gerarTXT(){
- let texto = 
- `TITULO: ${titulo.value}
-SOLICITANTE: ${solicitante.value}
-CENTRO DE CUSTO: ${cc.value}
-UNIDADE: ${unidade.value}
-DEPARTAMENTO: ${departamento.value}
-CONTATO: ${contato.value}
-EMAIL: ${email.value}
-PREVISAO: ${previsao.value}
-DESCRICAO: ${descricao.value}
-EQUIPAMENTO: ${equipamento.value}`;
+ let texto='';
+ const labels=document.querySelectorAll('#formPage label');
+ const fields=document.querySelectorAll('#formPage input, #formPage textarea');
+ labels.forEach((l,i)=>{texto += `${l.textContent}: ${fields[i].value}\n`;});
  const blob=new Blob([texto],{type:"text/plain"});
  const link=document.createElement("a");
  link.href=URL.createObjectURL(blob);
@@ -142,6 +221,6 @@ EQUIPAMENTO: ${equipamento.value}`;
  link.click();
 }
 </script>
-
+</div>
 </body>
 </html>
