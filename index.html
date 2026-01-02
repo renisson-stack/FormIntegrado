@@ -11,8 +11,6 @@
 body{font-family:Arial;margin:0;padding:10px;background:#f2f2f2}
 #mainframe{max-width:950px;margin:auto;background:#fff;padding:12px;border-radius:6px}
 
-/* ===== TÍTULO ===== */
-/* ===== CABEÇALHO COM TÍTULO À ESQUERDA E BOTÕES À DIREITA ===== */
 .header-bar{
   background:#0b5d3b;
   color:#fff;
@@ -29,7 +27,6 @@ body{font-family:Arial;margin:0;padding:10px;background:#f2f2f2}
   font-size:20px;
 }
 
-/* BOTÕES NO CABEÇALHO */
 .header-buttons{
   display:flex;
   gap:8px;
@@ -39,14 +36,12 @@ body{font-family:Arial;margin:0;padding:10px;background:#f2f2f2}
   background:#6fcf97;
   color:#0b5d3b;
   font-weight:600;
-
 }
 
 .header-buttons .btn-nav:hover{
   background:rgba(255,255,255,0.25);
 }
 
-/* MOBILE */
 @media (max-width:600px){
   .header-bar{
     flex-direction:column;
@@ -59,42 +54,41 @@ body{font-family:Arial;margin:0;padding:10px;background:#f2f2f2}
   }
 }
 
-
 h3{text-align:center;margin:10px 0}
 
 button{padding:6px 12px;margin:4px;font-size:13px;border:none;border-radius:4px;cursor:pointer}
 .btn-nav{background:#6c757d;color:#fff}
 .btn-save{background:#007bff;color:#fff}
 .btn-txt{background:#28a745;color:#fff}
-
-/* botão buscar azul claro */
 .btn-buscar{background:#4da3ff;color:#fff}
 
 #formPage,#chamadosPage,#consultaPage{display:none}
 input,textarea{
   width:97%;
-  padding:5px;            /* ⬇ menor altura */
-  margin-bottom:0;        /* ⬅ controle pelo campo-linha */
+  padding:5px;
+  margin-bottom:0;
   border:1px solid #ccc;
   border-radius:4px;
   font-size:13px;
 }
 
 textarea{
-  height:55px;            /* ⬇ menos alto */
+  height:55px;
   resize:vertical;
 }
 
 .campo-linha{
   display:flex;
   flex-direction:column;
-  margin-bottom:6px;      /* ⬇ espaço entre campos */
+  margin-bottom:6px;
 }
 
 .campo-linha label{
-  margin-bottom:2px;      /* ⬇ espaço label → campo */
+  margin-bottom:2px;
+  font-weight:600;
+  font-size:13px;
+  text-align:left;
 }
-
 
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{border:1px solid #ccc;padding:6px}
@@ -107,7 +101,6 @@ th{background:#f0f0f0}
 .found{color:green;font-weight:bold}
 .notfound{color:#c0392b;font-weight:bold}
 
-/* ===== CONSULTA SELO (LINHA ÚNICA) ===== */
 .linha-consulta{
   display:flex;
   gap:6px;
@@ -123,30 +116,13 @@ th{background:#f0f0f0}
 .c-dep{width:180px}
 .c-cc{width:120px}
 
-/* ===== FORMULÁRIO LABEL ACIMA DO CAMPO ===== */
-.campo-linha{
-  display:flex;
-  flex-direction:column;
-  margin-bottom:10px;
-}
-
-.campo-linha label{
-  font-weight:600;
-  font-size:13px;
-  margin-bottom:4px;
-  text-align:left;
-
-}
-
-/* BOTÕES DO FORM */
 .form-botoes{
   display:flex;
-  justify-content:flex-end; /* 👈 canto direito */
+  justify-content:flex-end;
   gap:8px;
   margin-top:10px;
 }
 
-/* MOBILE */
 @media (max-width:600px){
   .campo-linha{
     grid-template-columns: 1fr;
@@ -158,8 +134,6 @@ th{background:#f0f0f0}
     width:100%;
   }
 }
-
-
 </style>
 </head>
 <body>
@@ -174,7 +148,6 @@ th{background:#f0f0f0}
     <button class="btn-nav" onclick="abrirConsulta()">Consulta Selo</button>
   </div>
 </div>
-
 
 <!-- FORM -->
 <div id="formPage">
@@ -222,7 +195,6 @@ th{background:#f0f0f0}
 <div class="campo-linha">
   <label for="descricao">Descrição</label>
   <input id="descricao" type="text">
-
 </div>
 
 <div class="campo-linha">
@@ -230,14 +202,14 @@ th{background:#f0f0f0}
   <input id="equipamento" type="text">
 </div>
 
-<button class="btn-save" onclick="salvarChamado()">Salvar Chamado</button>
-<button class="btn-txt" onclick="gerarTXT()">Gerar TXT</button>
+<div class="form-botoes">
+  <button class="btn-save" onclick="salvarChamado()">Salvar Chamado</button>
+  <button class="btn-txt" onclick="gerarTXT()">Gerar TXT</button>
 </div>
-
+</div>
 
 <!-- CHAMADOS -->
 <div id="chamadosPage">
-
 <table>
   <thead>
     <tr>
@@ -259,7 +231,6 @@ th{background:#f0f0f0}
   </tbody>
 </table>
 </div>
-
 
 <!-- CONSULTA -->
 <div id="consultaPage">
@@ -318,6 +289,34 @@ function abrirConsulta(){
   consultaPage.style.display='block';
 }
 abrirForm();
+
+/* ================== FUNÇÃO PARA FORMATAR DATA ================== */
+function formatarData(dataString) {
+  if (!dataString) return '';
+  
+  // Se já estiver no formato DD/MM/YYYY, retorna como está
+  if (dataString.includes('/')) {
+    const partes = dataString.split('/');
+    if (partes[0].length <= 2) {
+      return dataString; // Já está em formato brasileiro
+    }
+  }
+  
+  // Tenta converter a data
+  const data = new Date(dataString);
+  
+  // Verifica se é uma data válida
+  if (isNaN(data.getTime())) {
+    return dataString; // Retorna original se não conseguir converter
+  }
+  
+  // Formata para DD/MM/YYYY
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  
+  return `${dia}/${mes}/${ano}`;
+}
 
 /* ====== CONSULTA SELO ====== */
 const file=document.getElementById('file');
@@ -435,11 +434,19 @@ function carregarChamados(){
 
       tbody.innerHTML='';
       data.forEach((row,i)=>{
-        if(i===0) return;
+        if(i===0) return; // Pula cabeçalho
+        
         const tr=document.createElement('tr');
-        row.forEach(col=>{
+        row.forEach((col, colIndex) => {
           const td=document.createElement('td');
-          td.textContent=col;
+          
+          // Formata as colunas de data (coluna 0 = Data, coluna 8 = Previsão)
+          if(colIndex === 0 || colIndex === 8) {
+            td.textContent = formatarData(col);
+          } else {
+            td.textContent = col;
+          }
+          
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -481,9 +488,9 @@ function confirmarTXT(){
   link.download = 'chamado.txt';
   link.click();
   fecharModalTxt();
-
 }
 </script>
+
 <!-- ===== MODAL PREVIEW TXT ===== -->
 <div id="modalTxt" style="
   display:none;
