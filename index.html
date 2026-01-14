@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
-body{font-family:Arial;margin:0;padding:10px;background:#f2f2f2}
+body{font-family:Arial;margin:0;padding:10px;background:#fff}
 #mainframe{max-width:950px;margin:auto;background:#fff;padding:12px;border-radius:6px}
 
 .header-bar{
@@ -70,6 +70,11 @@ input,textarea{
   border:1px solid #ccc;
   border-radius:4px;
   font-size:13px;
+}
+
+input::placeholder{
+  color:#9ca3af;
+  font-style:italic;
 }
 
 textarea{
@@ -146,6 +151,7 @@ th{background:#f0f0f0}
     <button class="btn-nav" onclick="abrirForm()">Formulário</button>
     <button class="btn-nav" onclick="abrirChamados()">Chamados</button>
     <button class="btn-nav" onclick="abrirConsulta()">Consulta Selo</button>
+    <button class="btn-nav" onclick="abrirPlanilha()">Planilha</button>
   </div>
 </div>
 
@@ -154,7 +160,7 @@ th{background:#f0f0f0}
 
 <div class="campo-linha">
   <label for="titulo">Título</label>
-  <input id="titulo" type="text">
+  <input id="titulo" type="text" placeholder="BRASKEM - RJ/SP - INC1051857 - SUBSTITUIÇÃO DE RÁDIO - BR RJ DUQUE DE CAXIAS PE9 - MANUTENÇÃO">
 </div>
 
 <div class="campo-linha">
@@ -163,18 +169,23 @@ th{background:#f0f0f0}
 </div>
 
 <div class="campo-linha">
-  <label for="cc">Centro de Custo</label>
+  <label for="login">Login</label>
+  <input id="login" type="text">
+</div>
+
+<div class="campo-linha">
+  <label for="cc">CC</label>
   <input id="cc" type="text">
 </div>
 
 <div class="campo-linha">
   <label for="unidade">Unidade</label>
-  <input id="unidade" type="text">
+  <input id="unidade" type="text" placeholder="RJ DUQUE DE CAXIAS PE9">
 </div>
 
 <div class="campo-linha">
   <label for="departamento">Departamento</label>
-  <input id="departamento" type="text">
+  <input id="departamento" type="text" placeholder="MANUTENÇÃO">
 </div>
 
 <div class="campo-linha">
@@ -188,7 +199,7 @@ th{background:#f0f0f0}
 </div>
 
 <div class="campo-linha">
-  <label for="previsao">Previsão</label>
+  <label for="previsao">Previsão de entrega</label>
   <input id="previsao" type="date">
 </div>
 
@@ -216,18 +227,19 @@ th{background:#f0f0f0}
       <th>Data</th>
       <th>Título</th>
       <th>Solicitante</th>
-      <th>Centro de Custo</th>
+      <th>Login</th>
+      <th>CC</th>
       <th>Unidade</th>
       <th>Departamento</th>
       <th>Contato</th>
       <th>Email</th>
-      <th>Previsão</th>
+      <th>Previsão de entrega</th>
       <th>Descrição</th>
       <th>Equipamento</th>
     </tr>
   </thead>
   <tbody id="listaChamados">
-    <tr><td colspan="11">Conectado ao Google Sheets</td></tr>
+    <tr><td colspan="12">Conectado ao Google Sheets</td></tr>
   </tbody>
 </table>
 </div>
@@ -266,6 +278,7 @@ th{background:#f0f0f0}
 <script>
 /* ================== CONFIG ================== */
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwbU4lhBDsPbz-PFEgmHwhXLncUzeyxQjQKkjlXLv3LflWxWnODTDvUGCl_BYAkbNJJQQ/exec';
+const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/SEU_ID_AQUI/edit'; // SUBSTITUA PELO ID DA SUA PLANILHA
 
 /* ================== NAVEGAÇÃO ================== */
 const formPage = document.getElementById('formPage');
@@ -287,6 +300,9 @@ function abrirConsulta(){
   formPage.style.display='none';
   chamadosPage.style.display='none';
   consultaPage.style.display='block';
+}
+function abrirPlanilha(){
+  window.open(GOOGLE_SHEET_URL, '_blank');
 }
 abrirForm();
 
@@ -381,7 +397,7 @@ buscarBtn.onclick=()=>{
 /* ================== SALVAR CHAMADO ================== */
 function salvarChamado(){
   const campos = [
-    titulo, solicitante, cc, unidade, departamento,
+    titulo, solicitante, login, cc, unidade, departamento,
     contato, email, previsao, descricao, equipamento
   ];
 
@@ -396,6 +412,7 @@ function salvarChamado(){
   const params = new URLSearchParams();
   params.append('titulo', titulo.value);
   params.append('solicitante', solicitante.value);
+  params.append('login', login.value);
   params.append('cc', cc.value);
   params.append('unidade', unidade.value);
   params.append('departamento', departamento.value);
@@ -440,8 +457,8 @@ function carregarChamados(){
         row.forEach((col, colIndex) => {
           const td=document.createElement('td');
           
-          // Formata as colunas de data (coluna 0 = Data, coluna 8 = Previsão)
-          if(colIndex === 0 || colIndex === 8) {
+          // Formata as colunas de data (coluna 0 = Data, coluna 9 = Previsão)
+          if(colIndex === 0 || colIndex === 9) {
             td.textContent = formatarData(col);
           } else {
             td.textContent = col;
@@ -457,13 +474,24 @@ function carregarChamados(){
 
 /* ================== TXT ================== */
 function gerarTXT(){
-  let texto = '';
-  const labels = document.querySelectorAll('#formPage label');
-  const fields = document.querySelectorAll('#formPage input, #formPage textarea');
-
-  labels.forEach((l,i)=>{
-    texto += `${l.textContent}: ${fields[i].value}\n`;
-  });
+  const tituloVal = document.getElementById('titulo').value.trim();
+  
+  if(!tituloVal){
+    alert('Preencha o título antes de gerar o TXT');
+    return;
+  }
+  
+  let texto = `${tituloVal}\n`;
+  texto += `Solicitante: ${solicitante.value}\n`;
+  texto += `Login: ${login.value}\n`;
+  texto += `CC: ${cc.value}\n`;
+  texto += `Unidade: ${unidade.value}\n`;
+  texto += `Departamento: ${departamento.value}\n`;
+  texto += `Contato: ${contato.value}\n`;
+  texto += `Email: ${email.value}\n`;
+  texto += `Previsão de entrega: ${previsao.value}\n`;
+  texto += `Descrição: ${descricao.value}\n`;
+  texto += `Equipamento: ${equipamento.value}`;
 
   document.getElementById('txtPreview').value = texto;
   document.getElementById('modalTxt').style.display = 'flex';
@@ -482,10 +510,13 @@ function copiarTxt(){
 
 function confirmarTXT(){
   const texto = document.getElementById('txtPreview').value;
+  const tituloArquivo = document.getElementById('titulo').value.trim();
+  const nomeArquivo = tituloArquivo.substring(0, 100) + '.txt';
+  
   const blob = new Blob([texto], {type:'text/plain'});
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'chamado.txt';
+  link.download = nomeArquivo;
   link.click();
   fecharModalTxt();
 }
